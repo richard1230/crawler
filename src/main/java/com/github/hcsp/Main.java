@@ -39,7 +39,7 @@ public class Main {
             if (isInterestingLink(link)) {
 
                 Document doc = httpGetAndParseHtml(link);
-                doc.select("a").stream().map(aTag->aTag.attr("href")).forEach(linkpool::add);
+                doc.select("a").stream().map(aTag -> aTag.attr("href")).forEach(linkpool::add);
 
                 //假如这是一个新闻的详情页面,就存入数据库,否则,就什么都不做
                 //有注释的地方就可以会被重构
@@ -84,8 +84,8 @@ public class Main {
     }
 
     private static boolean isInterestingLink(String link) {
-        return IsHomePage(link)&& IsNewsPage(link) && IsillegalString(link) || IsIndexPage(link)
-                &&  IsNotLoginPage(link);
+        return IsHomePage(link) && IsNewsPage(link) && IsillegalString(link) || IsIndexPage(link)
+                && IsNotLoginPage(link);
     }
 
     private static boolean IsHomePage(String link) {
@@ -105,7 +105,7 @@ public class Main {
     }
 
     private static boolean IsNotLoginPage(String link) {
-        return !link.contains("passport.sina.cn") ;
+        return !link.contains("passport.sina.cn");
 
     }
 }
