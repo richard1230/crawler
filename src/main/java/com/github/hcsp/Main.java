@@ -14,43 +14,42 @@ import org.jsoup.nodes.Element;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
-    private static final String USER_NAME ="root";
-    private static final String PASSWORD ="123456";
+    private static final String USER_NAME = "root";
+    private static final String PASSWORD = "123456";
 
 
-    private static List<String> loadUrlFromDatabase(Connection connection, String sql) throws SQLException {
-        List<String> results = new ArrayList<>();
+    private static String getNextLink(Connection connection, String sql) throws SQLException {
         ResultSet resultSet = null;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-             resultSet = statement.executeQuery();
+            resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                results.add(resultSet.getString(1));
+                return resultSet.getString(1);
             }
-        }finally {
+        } finally {
             if (resultSet != null) {
                 resultSet.close();
             }
         }
-        return results;
+        return null;
+    }
+
+    private static String getNextLinkThenDelete(Connection connection) throws SQLException {
+        String link = getNextLink(connection, "select link from links_to_be_processed limit 1");
+        if (link != null) {
+            updateDatabase(connection, link, "delete from links_to_be_processed where link = ?");
+        }
+        return link;
     }
 
     @SuppressFBWarnings("DMI_CONSTANT_DB_PASSWORD")
     public static void main(String[] args) throws IOException, SQLException {
         Connection connection = DriverManager.getConnection("jdbc:h2:file:/Users/mac/github/java/java_30_crawler/crawler/news", USER_NAME, PASSWORD);
-
-        while (true) {
-            //待处理的链接池
-            List<String> linkpool = loadUrlFromDatabase(connection, "select link from links_to_be_processed");
-            if (linkpool.isEmpty()) {
-                break;
-            }
-
-            //从待处理池子里面捞一个来处理
-            //处理完之后从池子中(包含数据库)中删除
-            String link = linkpool.remove(linkpool.size() - 1);
-            insertLinkIntoDatabase(connection, link, "delete from links_to_be_processed where link = ?");
+        String link;
+        //从数据库中加载下一个链接,如果能加载到,则进行循环
+        while ((link = getNextLinkThenDelete(connection)) != null) {
 
             //如果处理过了，什么都不做
             if (isLinkProcessed(connection, link)) {
@@ -65,9 +64,9 @@ public class Main {
 
                 //假如这是一个新闻的详情页面,就存入数据库,否则,就什么都不做
                 //有注释的地方就可以会被重构
-                StoreIntoDatabaseIfItisNewsPage(doc);
+                StoreIntoDatabaseIfItisNewsPage(connection, doc, link);
 
-                insertLinkIntoDatabase(connection, link, "insert into links_already_processed (link)values (?)");
+                updateDatabase(connection, link, "insert into links_already_processed (link)values (?)");
 
             }
 
@@ -77,7 +76,13 @@ public class Main {
     private static void parseUrlsFromPageAndStoreIntoDatabase(Connection connection, Document doc) throws SQLException {
         for (Element aTag : doc.select("a")) {
             String href = aTag.attr("href");
-            insertLinkIntoDatabase(connection, href, "insert into LINKS_TO_BE_PROCESSED (link)values (?)");
+
+            if (href.startsWith("//")) {
+                href = "https:" + href;
+            }
+            if (!(href.toLowerCase().startsWith("javascript"))) {
+                updateDatabase(connection, href, "insert into LINKS_TO_BE_PROCESSED (link)values (?)");
+            }
         }
     }
 
@@ -85,7 +90,7 @@ public class Main {
         ResultSet resultSet = null;
         try (PreparedStatement statement = connection.prepareStatement("select link from LINKS_ALREADY_PROCESSED where link = ?")) {
             statement.setString(1, link);
-             resultSet = statement.executeQuery();
+            resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 return true;
             }
@@ -97,7 +102,7 @@ public class Main {
         return false;
     }
 
-    private static void insertLinkIntoDatabase(Connection connection, String link, String sql) throws SQLException {
+    private static void updateDatabase(Connection connection, String link, String sql) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, link);
             statement.executeUpdate();
@@ -106,12 +111,20 @@ public class Main {
     }
 
 
-    private static void StoreIntoDatabaseIfItisNewsPage(Document doc) {
+    private static void StoreIntoDatabaseIfItisNewsPage(Connection connection, Document doc, String link) throws SQLException {
         ArrayList<Element> articleTags = doc.select("article");
         if (!articleTags.isEmpty()) {
             for (Element articleTag : articleTags) {
                 String title = articleTags.get(0).child(0).text();
-                System.out.println(title);
+                String content = articleTag.select("p").stream().map(Element::text).collect(Collectors.joining("\n"));
+//                System.out.println(title);
+
+                try (PreparedStatement statement = connection.prepareStatement("insert into NEWS (url,title,CONTENT,CREATED_AT,MODIFIED_AT) values (?,?,?,now(),now());")) {
+                    statement.setString(1, link);
+                    statement.setString(2, title);
+                    statement.setString(3, content);
+                    statement.executeUpdate();
+                }
             }
         }
     }
@@ -122,9 +135,7 @@ public class Main {
         //就是拿到它的数据
         CloseableHttpClient httpclient = HttpClients.createDefault();
         System.out.println(link);
-        if (link.startsWith("//")) {
-            link = "https:" + link;
-        }
+
         HttpGet httpGet = new HttpGet(link);
         httpGet.addHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36");
         try (CloseableHttpResponse response1 = httpclient.execute(httpGet)) {
