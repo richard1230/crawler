@@ -18,7 +18,7 @@ public class MyBatisCrawlerDao implements CrawlerDao {
         try {
             String resource = "db/mybatis/config.xml";
             InputStream inputStream = Resources.getResourceAsStream(resource);
-             sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -30,7 +30,7 @@ public class MyBatisCrawlerDao implements CrawlerDao {
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             String url = session.selectOne("com.github.hcsp.MyMapper.selectNextAvailableLink");
             if (url != null) {
-                session.delete("com.github.hcsp.MyMapper.deleteLink",url);
+                session.delete("com.github.hcsp.MyMapper.deleteLink", url);
             }
             return url;
         }
@@ -55,9 +55,9 @@ public class MyBatisCrawlerDao implements CrawlerDao {
 
     @Override
     public void insertProcessedLink(String link) {
-        Map<String,Object> param = new HashMap<>();
-        param.put("tableName","links_already_processed");
-        param.put("link",link);
+        Map<String, Object> param = new HashMap<>();
+        param.put("tableName", "links_already_processed");
+        param.put("link", link);
         //insert into links_already_processed (link) values (#link)
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             session.insert("com.github.hcsp.MyMapper.insertLink", param);
@@ -67,9 +67,9 @@ public class MyBatisCrawlerDao implements CrawlerDao {
     @Override
     public void insertLinkToBeProcessed(String link) {
         //insert into links_to_be_processed (link) values (#link)
-        Map<String,Object> param = new HashMap<>();
-        param.put("tableName","links_to_be_processed");
-        param.put("link",link);
+        Map<String, Object> param = new HashMap<>();
+        param.put("tableName", "links_to_be_processed");
+        param.put("link", link);
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             session.insert("com.github.hcsp.MyMapper.insertLink", param);
         }
