@@ -1069,6 +1069,7 @@ java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supporte
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
 	at java.lang.Thread.run(Thread.java:748)
+<<<<<<< HEAD
 2020-02-09 12:51:40 jdbc[3]: exception
 java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supported.
 	at org.h2.jdbc.JdbcConnection.setClientInfo(JdbcConnection.java:1749)
@@ -1397,3 +1398,5 @@ java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supporte
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
 	at java.lang.Thread.run(Thread.java:748)
+=======
+>>>>>>> master
