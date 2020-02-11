@@ -4,9 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.hcsp.MyMapper">
     <select id="selectNextAvailableLink" resultType="String">
-        select link
-        from links_to_be_processed
-        limit 1
+        select link from links_to_be_processed limit 1
     </select>
     <delete id="deleteLink" parameterType="String">
         delete
@@ -14,13 +12,13 @@
         where link = #{link}
     </delete>
     <insert id="insertNews" parameterType="com.github.hcsp.News">
-        insert into NEWS (url, title, CONTENT, CREATED_AT, MODIFIED_AT)
+        insert into news (url, title, CONTENT, CREATED_AT, MODIFIED_AT)
         values (#{url}, #{title}, #{content}, now(), now())
     </insert>
     <select id="countLink" parameterType="String" resultType="int">
         select count(link)
-        from LINKS_ALREADY_PROCESSED
-        where LINK = #{link }
+        from links_already_processed
+        where link = #{link }
     </select>
     <insert id="insertLink" parameterType="HashMap">
         -- 下面是一个动态sql操作:动态地决定这个sql长什么样子
@@ -35,6 +33,6 @@
             </otherwise>
         </choose>
         (link)
-        values #{link}
+        values( #{link})
     </insert>
 </mapper>

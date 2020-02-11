@@ -9,8 +9,8 @@ public class News {
 
     public News(String url, String content, String title) {
         this.url = url;
-        this.content = content;
         this.title = title;
+        this.content = content;
     }
 
     public Integer getId() {

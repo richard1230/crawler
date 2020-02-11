@@ -68,7 +68,12 @@
             <artifactId>mybatis</artifactId>
             <version>3.4.6</version>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.19</version>
+        </dependency>
 
 
     </dependencies>
@@ -105,6 +110,8 @@
                             <artifactId>checkstyle</artifactId>
                             <version>8.29</version>
                         </dependency>
+
+
                     </dependencies>
                 </plugin>
             <plugin>
@@ -134,12 +141,13 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>6.2.2</version>
                 <configuration>
-                    <url>jdbc:h2:file:/Users/mac/github/java/java_30_crawler/crawler/news</url>
+                    <!-- <url>jdbc:h2:file:/Users/mac/github/java/java_30_crawler/crawler/news</url>-->
+                    <url>jdbc:mysql://localhost:3306/news?characterEncoding=utf-8</url>
                     <user>root</user>
                     <password>123456</password>
                     <baselineOnMigrate>true</baselineOnMigrate>
                 </configuration>
-<!--                <dependencies>-->
+                <!--                <dependencies>-->
 <!--                    <dependency>-->
 <!--                        <groupId>com.h2database</groupId>-->
 <!--                        <artifactId>h2</artifactId>-->
