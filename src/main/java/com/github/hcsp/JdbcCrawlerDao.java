@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.sql.*;
 
-public class JdbcCrawlerDao implements CrawlerDao{
+public class JdbcCrawlerDao implements CrawlerDao {
     private static final String USER_NAME = "root";
     private static final String PASSWORD = "123456";
 
