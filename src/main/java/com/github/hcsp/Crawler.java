@@ -16,41 +16,45 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Crawler {
+public class Crawler extends Thread {
 
 
-    CrawlerDao dao = new MyBatisCrawlerDao();
+    private CrawlerDao dao;
 
-    public void run() throws SQLException, IOException {
-        String link;
-        //从数据库中加载下一个链接,如果能加载到,则进行循环
-        while ((link = dao.getNextLinkThenDelete()) != null) {
-
-            //如果处理过了，什么都不做
-            if (dao.isLinkProcessed(link)) {
-                continue;
-            }
-            //这里的\\/里面的第一个符号为转移符号
-            if (isInterestingLink(link)) {
-
-                Document doc = httpGetAndParseHtml(link);
-
-                parseUrlsFromPageAndStoreIntoDatabase(doc);
-
-                //假如这是一个新闻的详情页面,就存入数据库,否则,就什么都不做
-                //有注释的地方就可以会被重构
-                StoreIntoDatabaseIfItisNewsPage(doc, link);
-                dao.insertProcessedLink(link);
-//                dao.updateDatabase(link, "insert into links_already_processed (link)values (?)");
-
-            }
-
-        }
+    public Crawler(CrawlerDao dao) {
+        this.dao = dao;
     }
 
-    @SuppressFBWarnings("DMI_CONSTANT_DB_PASSWORD")
-    public static void main(String[] args) throws IOException, SQLException {
-        new Crawler().run();
+    @Override
+    public void run() {
+        try {
+            String link;
+            //从数据库中加载下一个链接,如果能加载到,则进行循环
+            while ((link = dao.getNextLinkThenDelete()) != null) {
+
+                //如果处理过了，什么都不做
+                if (dao.isLinkProcessed(link)) {
+                    continue;
+                }
+                //这里的\\/里面的第一个符号为转移符号
+                if (isInterestingLink(link)) {
+
+                    Document doc = httpGetAndParseHtml(link);
+
+                    parseUrlsFromPageAndStoreIntoDatabase(doc);
+
+                    //假如这是一个新闻的详情页面,就存入数据库,否则,就什么都不做
+                    //有注释的地方就可以会被重构
+                    StoreIntoDatabaseIfItisNewsPage(doc, link);
+                    dao.insertProcessedLink(link);
+            
+                }
+
+            }
+        } catch (Exception e) {
+            //实在不知道就写下面这个
+            throw new RuntimeException(e);
+        }
     }
 
     private void parseUrlsFromPageAndStoreIntoDatabase(Document doc) throws SQLException {
@@ -62,7 +66,6 @@ public class Crawler {
             }
             if (!(href.toLowerCase().startsWith("javascript"))) {
                 dao.insertLinkToBeProcessed(href);
-//                dao.updateDatabase(href, "insert into LINKS_TO_BE_PROCESSED (link)values (?)");
             }
         }
     }
