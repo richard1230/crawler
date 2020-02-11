@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class Crawler extends Thread {
 
 
-   private CrawlerDao dao ;
+    private CrawlerDao dao;
 
     public Crawler(CrawlerDao dao) {
         this.dao = dao;
@@ -52,7 +52,7 @@ public class Crawler extends Thread {
                 }
 
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             //实在不知道就写下面这个
             throw new RuntimeException(e);
         }
