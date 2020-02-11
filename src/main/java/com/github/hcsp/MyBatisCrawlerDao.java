@@ -24,9 +24,9 @@ public class MyBatisCrawlerDao implements CrawlerDao {
         }
     }
 
-
+    //只有这里的操作是非原子的,故这里需要加synchronized
     @Override
-    public String getNextLinkThenDelete() throws SQLException {
+    public synchronized String getNextLinkThenDelete() throws SQLException {
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             String url = session.selectOne("com.github.hcsp.MyMapper.selectNextAvailableLink");
             if (url != null) {
