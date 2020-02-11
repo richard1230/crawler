@@ -34,7 +34,6 @@ public class MyBatisCrawlerDao implements CrawlerDao {
             }
             return url;
         }
-
     }
 
 
