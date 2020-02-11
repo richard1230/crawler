@@ -4,7 +4,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.sql.*;
 
-public class JdbcCrawlerDao implements CrawlerDao{
+public class JdbcCrawlerDao implements CrawlerDao {
     private static final String USER_NAME = "root";
     private static final String PASSWORD = "123456";
 
@@ -19,7 +19,7 @@ public class JdbcCrawlerDao implements CrawlerDao{
         }
     }
 
-    public String getNextLink(String sql) throws SQLException {
+    private String getNextLink(String sql) throws SQLException {
         ResultSet resultSet = null;
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             resultSet = statement.executeQuery();
@@ -74,5 +74,15 @@ public class JdbcCrawlerDao implements CrawlerDao{
             }
         }
         return false;
+    }
+
+    @Override
+    public void insertProcessedLink(String link) {
+
+    }
+
+    @Override
+    public void insertLinkToBeProcessed(String href) {
+
     }
 }

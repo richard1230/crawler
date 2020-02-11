@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+<!--                <property name="driver" value="org.h2.Driver"/>-->
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+<!--                <property name="url" value="jdbc:h2:file:/Users/mac/github/java/java_30_crawler/crawler/news"/>-->
+                <property name="url" value="jdbc:mysql://localhost:3306/news?characterEncoding=utf-8"/>
+                <property name="username" value="root"/>
+                <property name="password" value="123456"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper resource="db/mybatis/MyMapper.xml"/>
+    </mappers>
+</configuration>
+

@@ -10,6 +10,7 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 public class Crawler {
 
 
-    CrawlerDao dao = new JdbcCrawlerDao();
+    CrawlerDao dao = new MyBatisCrawlerDao();
 
     public void run() throws SQLException, IOException {
         String link;
@@ -39,8 +40,8 @@ public class Crawler {
                 //假如这是一个新闻的详情页面,就存入数据库,否则,就什么都不做
                 //有注释的地方就可以会被重构
                 StoreIntoDatabaseIfItisNewsPage(doc, link);
-
-                dao.updateDatabase(link, "insert into links_already_processed (link)values (?)");
+                dao.insertProcessedLink(link);
+//                dao.updateDatabase(link, "insert into links_already_processed (link)values (?)");
 
             }
 
@@ -60,7 +61,8 @@ public class Crawler {
                 href = "https:" + href;
             }
             if (!(href.toLowerCase().startsWith("javascript"))) {
-                dao.updateDatabase(href, "insert into LINKS_TO_BE_PROCESSED (link)values (?)");
+                dao.insertLinkToBeProcessed(href);
+//                dao.updateDatabase(href, "insert into LINKS_TO_BE_PROCESSED (link)values (?)");
             }
         }
     }
