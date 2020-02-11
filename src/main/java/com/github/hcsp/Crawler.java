@@ -47,8 +47,7 @@ public class Crawler extends Thread {
                     //有注释的地方就可以会被重构
                     StoreIntoDatabaseIfItisNewsPage(doc, link);
                     dao.insertProcessedLink(link);
-//                dao.updateDatabase(link, "insert into links_already_processed (link)values (?)");
-
+            
                 }
 
             }
@@ -67,7 +66,6 @@ public class Crawler extends Thread {
             }
             if (!(href.toLowerCase().startsWith("javascript"))) {
                 dao.insertLinkToBeProcessed(href);
-//                dao.updateDatabase(href, "insert into LINKS_TO_BE_PROCESSED (link)values (?)");
             }
         }
     }
