@@ -1,17 +1,52 @@
 package com.github.hcsp;
 
 
+import java.sql.Timestamp;
+import java.time.Instant;
+
 public class News {
     private Integer id;
     private String url;
     private String content;
     private String title;
+    private Instant createdAt;
+    private Instant modifiedAt;
+
+    News() {
+
+    }
 
     public News(String url, String content, String title) {
-        this.url = url;
         this.title = title;
         this.content = content;
+        this.url = url;
     }
+
+    public News(News old) {
+        this.id = old.id;
+        this.url = old.url;
+        this.content = old.content;
+        this.title = old.title;
+        this.createdAt = old.createdAt;
+        this.modifiedAt = old.modifiedAt;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getModifideAt() {
+        return modifiedAt;
+    }
+
+    public void setModifideAt(Instant modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
 
     public Integer getId() {
         return id;

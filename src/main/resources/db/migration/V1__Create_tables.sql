@@ -5,7 +5,7 @@ content text,
 url varchar(1000),
 created_at timestamp default now(),
 modified_at timestamp default now()
-                 );
+)DEFAULT CHARSET=utf8mb4;
 
 create table links_to_be_processed( link varchar(1000));
 
