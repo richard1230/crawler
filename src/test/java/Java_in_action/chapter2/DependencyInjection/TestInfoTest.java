@@ -1,4 +1,4 @@
-package Java_in_action.DependencyInjection;
+package Java_in_action.chapter2.DependencyInjection;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
