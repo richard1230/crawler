@@ -25,13 +25,14 @@ public class ElasticsearchEngine {
     }
 
     private static void search(String keyword) throws IOException {
-        try (RestHighLevelClient client = new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")))) {
+        try (RestHighLevelClient client =
+                     new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")))) {
             SearchRequest request = new SearchRequest("news");
-            request.source(new SearchSourceBuilder().query(new MultiMatchQueryBuilder(keyword, "title", "content")));
+            request.source(
+                    new SearchSourceBuilder().query(new MultiMatchQueryBuilder(keyword, "title", "content")));
             SearchResponse result = client.search(request, RequestOptions.DEFAULT);
 
             result.getHits().forEach(hit -> System.out.println(hit.getSourceAsString()));
-
         }
     }
 }

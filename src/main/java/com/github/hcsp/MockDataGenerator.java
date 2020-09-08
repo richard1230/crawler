@@ -57,6 +57,5 @@ public class MockDataGenerator {
         }
 
         mockData(sqlSessionFactory, 100_0000);
-
     }
 }

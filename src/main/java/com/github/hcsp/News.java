@@ -1,7 +1,5 @@
 package com.github.hcsp;
 
-
-import java.sql.Timestamp;
 import java.time.Instant;
 
 public class News {
@@ -13,7 +11,6 @@ public class News {
     private Instant modifiedAt;
 
     News() {
-
     }
 
     public News(String url, String content, String title) {
@@ -47,7 +44,6 @@ public class News {
         this.modifiedAt = modifiedAt;
     }
 
-
     public Integer getId() {
         return id;
     }
@@ -79,5 +75,4 @@ public class News {
     public void setTitle(String title) {
         this.title = title;
     }
-
 }

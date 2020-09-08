@@ -35,7 +35,6 @@ public class MyBatisCrawlerDao implements CrawlerDao {
         }
     }
 
-
     @Override
     public void insertNewsIntoDatabase(String url, String title, String content) throws SQLException {
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
@@ -56,7 +55,7 @@ public class MyBatisCrawlerDao implements CrawlerDao {
         Map<String, Object> param = new HashMap<>();
         param.put("tableName", "links_already_processed");
         param.put("link", link);
-        //insert into links_already_processed (link) values (#link)
+        // insert into links_already_processed (link) values (#link)
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             session.insert("com.github.hcsp.MyMapper.insertLink", param);
         }
@@ -70,6 +69,5 @@ public class MyBatisCrawlerDao implements CrawlerDao {
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             session.insert("com.github.hcsp.MyMapper.insertLink", param);
         }
-
     }
 }

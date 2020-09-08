@@ -13,7 +13,11 @@ public class JdbcCrawlerDao implements CrawlerDao {
     @SuppressFBWarnings("DMI_CONSTANT_DB_PASSWORD")
     public JdbcCrawlerDao() {
         try {
-            this.connection = DriverManager.getConnection("jdbc:h2:file:/Users/mac/github/java/java_30_crawler/crawler/news", USER_NAME, PASSWORD);
+            this.connection =
+                    DriverManager.getConnection(
+                            "jdbc:h2:file:/Users/mac/github/java/java_30_crawler/crawler/news",
+                            USER_NAME,
+                            PASSWORD);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -46,13 +50,13 @@ public class JdbcCrawlerDao implements CrawlerDao {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, link);
             statement.executeUpdate();
-
         }
     }
 
-
     public void insertNewsIntoDatabase(String url, String title, String content) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement("insert into NEWS (url,title,CONTENT,CREATED_AT,MODIFIED_AT) values (?,?,?,now(),now());")) {
+        try (PreparedStatement statement =
+                     connection.prepareStatement(
+                             "insert into NEWS (url,title,CONTENT,CREATED_AT,MODIFIED_AT) values (?,?,?,now(),now());")) {
             statement.setString(1, url);
             statement.setString(2, title);
             statement.setString(3, content);
@@ -62,7 +66,8 @@ public class JdbcCrawlerDao implements CrawlerDao {
 
     public boolean isLinkProcessed(String link) throws SQLException {
         ResultSet resultSet = null;
-        try (PreparedStatement statement = connection.prepareStatement("select link from LINKS_ALREADY_PROCESSED where link = ?")) {
+        try (PreparedStatement statement =
+                     connection.prepareStatement("select link from LINKS_ALREADY_PROCESSED where link = ?")) {
             statement.setString(1, link);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -78,11 +83,9 @@ public class JdbcCrawlerDao implements CrawlerDao {
 
     @Override
     public void insertProcessedLink(String link) {
-
     }
 
     @Override
     public void insertLinkToBeProcessed(String href) {
-
     }
 }

@@ -34,19 +34,22 @@ public class ElasticsearchDataGenerator extends Thread {
         List<News> newsFromMySQL = getNewsFromMySQL(sqlSessionFactory);
         writeSingleThread(newsFromMySQL);
         for (int i = 0; i < 10; i++) {
-            new Thread(() -> {
-                try {
-                    writeSingleThread(newsFromMySQL);
-                } catch (IOException e) {
-                    throw new RuntimeException();
-                }
-            }).start();
+            new Thread(
+                    () -> {
+                        try {
+                            writeSingleThread(newsFromMySQL);
+                        } catch (IOException e) {
+                            throw new RuntimeException();
+                        }
+                    })
+                    .start();
         }
     }
 
     private static void writeSingleThread(List<News> newsFromMySQL) throws IOException {
 
-        try (RestHighLevelClient client = new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")))) {
+        try (RestHighLevelClient client =
+                     new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")))) {
             for (int i = 0; i < 1000; i++) {
                 BulkRequest bulkrequest = new BulkRequest();
 
@@ -54,7 +57,11 @@ public class ElasticsearchDataGenerator extends Thread {
                     IndexRequest request = new IndexRequest("news");
 
                     Map<String, Object> data = new HashMap<>();
-                    data.put("content", news.getContent().length() > 10 ? news.getContent().substring(0, 10) : news.getContent());
+                    data.put(
+                            "content",
+                            news.getContent().length() > 10
+                                    ? news.getContent().substring(0, 10)
+                                    : news.getContent());
                     data.put("url", news.getUrl());
                     data.put("title", news.getTitle());
                     data.put("createdAt", news.getCreatedAt());
@@ -62,11 +69,15 @@ public class ElasticsearchDataGenerator extends Thread {
 
                     request.source(data, XContentType.JSON);
                     bulkrequest.add(request);
-
                 }
                 BulkResponse bulkResponse = client.bulk(bulkrequest, RequestOptions.DEFAULT);
-                System.out.println("Current thread: " + Thread.currentThread().getName() + "finishes" + i + ": " + bulkResponse.status().getStatus());
-
+                System.out.println(
+                        "Current thread: "
+                                + Thread.currentThread().getName()
+                                + "finishes"
+                                + i
+                                + ": "
+                                + bulkResponse.status().getStatus());
             }
 
         } catch (IOException e) {
