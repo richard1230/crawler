@@ -29,30 +29,24 @@ public class Crawler extends Thread {
     public void run() {
         try {
             String link;
-            //从数据库中加载下一个链接,如果能加载到,则进行循环
             while ((link = dao.getNextLinkThenDelete()) != null) {
 
-                //如果处理过了，什么都不做
                 if (dao.isLinkProcessed(link)) {
                     continue;
                 }
-                //这里的\\/里面的第一个符号为转移符号
                 if (isInterestingLink(link)) {
 
                     Document doc = httpGetAndParseHtml(link);
 
                     parseUrlsFromPageAndStoreIntoDatabase(doc);
 
-                    //假如这是一个新闻的详情页面,就存入数据库,否则,就什么都不做
-                    //有注释的地方就可以会被重构
                     StoreIntoDatabaseIfItisNewsPage(doc, link);
                     dao.insertProcessedLink(link);
-            
+
                 }
 
             }
         } catch (Exception e) {
-            //实在不知道就写下面这个
             throw new RuntimeException(e);
         }
     }
@@ -77,7 +71,6 @@ public class Crawler extends Thread {
             for (Element articleTag : articleTags) {
                 String title = articleTags.get(0).child(0).text();
                 String content = articleTag.select("p").stream().map(Element::text).collect(Collectors.joining("\n"));
-//                System.out.println(title);
                 dao.insertNewsIntoDatabase(link, title, content);
 
             }
@@ -86,8 +79,6 @@ public class Crawler extends Thread {
 
     private static Document httpGetAndParseHtml(String link) throws IOException {
 
-        //这是我们感兴趣的,我们只处理新浪站内的链接
-        //就是拿到它的数据
         CloseableHttpClient httpclient = HttpClients.createDefault();
         System.out.println(link);
 
@@ -98,7 +89,6 @@ public class Crawler extends Thread {
             HttpEntity entity1 = response1.getEntity();
             String html = EntityUtils.toString(entity1);
             return Jsoup.parse(html);
-            //select：css选择器
 
         }
     }

@@ -32,9 +32,7 @@ public class ElasticsearchDataGenerator extends Thread {
             throw new RuntimeException(e);
         }
         List<News> newsFromMySQL = getNewsFromMySQL(sqlSessionFactory);
-        //RestHighLevelClient是closeable的,故必须放在trywithresources里面
         writeSingleThread(newsFromMySQL);
-        //这里的i不宜过大,太大会占据cpu相当多的资源！这样会导致掉脑相当卡
         for (int i = 0; i < 10; i++) {
             new Thread(() -> {
                 try {
@@ -49,9 +47,7 @@ public class ElasticsearchDataGenerator extends Thread {
     private static void writeSingleThread(List<News> newsFromMySQL) throws IOException {
 
         try (RestHighLevelClient client = new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")))) {
-            //单线程写入2000*1000 = 200_0000
             for (int i = 0; i < 1000; i++) {
-                //批处理
                 BulkRequest bulkrequest = new BulkRequest();
 
                 for (News news : newsFromMySQL) {
@@ -66,8 +62,6 @@ public class ElasticsearchDataGenerator extends Thread {
 
                     request.source(data, XContentType.JSON);
                     bulkrequest.add(request);
-//                     IndexResponse response = client.index(request, RequestOptions.DEFAULT);
-//                     System.out.println(response.status().getStatus());
 
                 }
                 BulkResponse bulkResponse = client.bulk(bulkrequest, RequestOptions.DEFAULT);

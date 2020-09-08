@@ -24,7 +24,6 @@ public class MyBatisCrawlerDao implements CrawlerDao {
         }
     }
 
-    //只有这里的操作是非原子的,故这里需要加synchronized
     @Override
     public synchronized String getNextLinkThenDelete() throws SQLException {
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
@@ -65,7 +64,6 @@ public class MyBatisCrawlerDao implements CrawlerDao {
 
     @Override
     public void insertLinkToBeProcessed(String link) {
-        //insert into links_to_be_processed (link) values (#link)
         Map<String, Object> param = new HashMap<>();
         param.put("tableName", "links_to_be_processed");
         param.put("link", link);

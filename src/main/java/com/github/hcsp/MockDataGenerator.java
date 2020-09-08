@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Random;
 
 public class MockDataGenerator {
-//    private static final int TARGET_ROW_COUNT = 100_0000;
 
     private static void mockData(SqlSessionFactory sqlSessionFactory, int howMany) {
         try (SqlSession session = sqlSessionFactory.openSession(ExecutorType.BATCH)) {
@@ -37,11 +36,9 @@ public class MockDataGenerator {
                         session.flushStatements();
                     }
                 }
-                //提交操作,可以将上面while循环里面的操作作为一次操作提交
                 session.commit();
 
             } catch (Exception e) {
-                //如上面while循环里面有异常发生,可以全部回滚
                 session.rollback();
                 throw new RuntimeException(e);
             }
